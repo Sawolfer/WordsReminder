@@ -47,12 +47,9 @@
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="New Word"/>
                                                 <connections>
-                                                    <action selector="newWordCreation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2rd-v2-AOb"/>
+                                                    <action selector="newWordCreation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZqI-24-wcf"/>
                                                 </connections>
                                             </button>
-                                            <connections>
-                                                <action selector="newWordCreation:" destination="BYZ-38-t0r" id="UFW-8l-8AA"/>
-                                            </connections>
                                         </barButtonItem>
                                     </navigationItem>
                                 </items>
