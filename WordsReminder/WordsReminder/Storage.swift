@@ -19,9 +19,10 @@ class Storage: ObservableObject{
         return documentsDirectory.appendingPathComponent(fileName)
     }
     
-    private func clear() async throws{
+    func clear() async throws{
         let fileURL = Self.fileURL()
-        try FileManager.default.removeItem(at: fileURL)
+        let text = ""
+        try text.write(to: fileURL, atomically: false, encoding: .utf8)
     }
     
     func load() async throws{

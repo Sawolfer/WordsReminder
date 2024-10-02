@@ -37,6 +37,16 @@ class ViewController: UIViewController, WordCreationDelegate {
         }
     }
     
+    func clear_data(){
+        Task{
+            try await storage.clear()
+            let subViews = self.list_of_words.subviews
+            for subview in subViews{
+                subview.removeFromSuperview()
+            }
+            words.removeAll()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,9 +62,10 @@ class ViewController: UIViewController, WordCreationDelegate {
     }
   
     
-    func clear(){
-        words.removeAll()
+    @IBAction func clearAction(_ sender: UIButton) {
+        self.clear_data()
     }
+    
     
 
     @IBAction func newWordCreation(_ sender: UIButton) {
