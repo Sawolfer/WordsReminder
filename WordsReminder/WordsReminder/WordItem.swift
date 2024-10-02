@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 
-class WordItem{
+class WordItem: Codable{
     var word: String
     var description: String
     
