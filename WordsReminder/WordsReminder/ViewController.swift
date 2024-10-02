@@ -26,7 +26,6 @@ class ViewController: UIViewController, WordCreationDelegate {
         catch {
             fatalError(error.localizedDescription)
         }
-        return []
     }
     
     func save_data() async {
@@ -43,7 +42,7 @@ class ViewController: UIViewController, WordCreationDelegate {
         super.viewDidLoad()
         list_of_words.isScrollEnabled = true
         
-        Task { 
+        Task {
             let last_words = await get_data()
             for word in last_words{
                 addNewWord(word.word, description: word.description)
