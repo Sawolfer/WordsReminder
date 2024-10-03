@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class ViewController: UIViewController, WordCreationDelegate {
+class ViewController: UIViewController, WordManagement {
     
     private var storage = Storage()
     
@@ -17,6 +17,7 @@ class ViewController: UIViewController, WordCreationDelegate {
     var currentYPosition: CGFloat = 10.0
     
     var words = [WordItem]()
+    var wordsViews = [String: WordItemView]()
     
     func get_data() async -> [WordItem]{
         do {
@@ -37,10 +38,21 @@ class ViewController: UIViewController, WordCreationDelegate {
         }
     }
     
+    func clear_data(){
+        Task{
+            try await storage.clear()
+            let subViews = self.list_of_words.subviews
+            for subview in subViews{
+                subview.removeFromSuperview()
+            }
+            words.removeAll()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         list_of_words.isScrollEnabled = true
+        list_of_words.showsVerticalScrollIndicator = false
         
         Task {
             let last_words = await get_data()
@@ -52,9 +64,10 @@ class ViewController: UIViewController, WordCreationDelegate {
     }
   
     
-    func clear(){
-        words.removeAll()
+    @IBAction func clearAction(_ sender: UIButton) {
+        self.clear_data()
     }
+    
     
 
     @IBAction func newWordCreation(_ sender: UIButton) {
@@ -70,6 +83,9 @@ class ViewController: UIViewController, WordCreationDelegate {
         words.append(newWord)
         
         let newWordView = WordItemView(word: newWord)
+        newWordView.delegate = self
+        
+        wordsViews[newWord.word] = newWordView
         
         newWordView.frame = CGRect(x: 10, y: 10, width: list_of_words.frame.width - 20, height: 50)
 
@@ -87,13 +103,39 @@ class ViewController: UIViewController, WordCreationDelegate {
         }
     }
     
+    public func removeWord(_ word: String) {
+        let wordView = wordsViews[word]
+        
+        wordView?.removeFromSuperview()
+        for i in 0..<words.count{
+            if words[i].word == word{
+                words.remove(at: i)
+                break
+            }
+        }
+        let removedViewYPosition = wordView?.frame.origin.y ?? 0
+        for subview in list_of_words.subviews {
+            if subview.frame.origin.y > removedViewYPosition {
+                subview.frame = subview.frame.offsetBy(dx: 0, dy: -60)
+            }
+        }
+        
+        currentYPosition -= 60
+        list_of_words.contentSize = CGSize(width: list_of_words.frame.width, height: currentYPosition)
+        
+        Task {
+            await save_data()
+        }
+    }
+    
     @IBAction func editList(_ sender: UIButton) {
         print("nothing")
     }
     
 }
 
-protocol WordCreationDelegate: AnyObject {
+protocol WordManagement: AnyObject {
     func addNewWord(_ word: String, description: String)
+    func removeWord(_ word: String)
 }
 
