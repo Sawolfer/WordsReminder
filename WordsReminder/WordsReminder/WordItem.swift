@@ -25,6 +25,7 @@ class WordItemView: UIView {
     private let descriptionLabel = UILabel()
     
     private let swipe_to_delete = UISwipeGestureRecognizer()
+    private let tap_to_open = UITapGestureRecognizer()
     
     weak var delegate: WordManagement?
     
@@ -32,6 +33,7 @@ class WordItemView: UIView {
         super.init(frame: .zero)
         setupView(word)
         setupSwipeToDelete()
+        setupTapToOpen()
     }
     
     required init?(coder: NSCoder) {
@@ -61,6 +63,11 @@ class WordItemView: UIView {
         addGestureRecognizer(swipe_to_delete)
     }
     
+    func setupTapToOpen() {
+        tap_to_open.addTarget(self, action: #selector(handleTapToOpen))
+        addGestureRecognizer(tap_to_open)
+    }
+    
     @objc private func handleSwipeToDelete() {
         UIView.animate(withDuration: 0.3, animations: {
             self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
@@ -70,5 +77,9 @@ class WordItemView: UIView {
         }
         delegate?.removeWord(self.wordLabel.text!)
         print("Delete word: \(self.wordLabel.text ?? "")")
+    }
+    
+    @objc private func handleTapToOpen() {
+        delegate?.showDict()
     }
 }

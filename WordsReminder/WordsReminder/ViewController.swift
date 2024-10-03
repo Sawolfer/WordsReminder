@@ -128,6 +128,12 @@ class ViewController: UIViewController, WordManagement {
         }
     }
     
+    public func showDict() {
+        let dictVC = DictionaryViewController()
+        dictVC.modalPresentationStyle = .fullScreen
+        present(dictVC, animated: true, completion: nil)
+    }
+    
     @IBAction func editList(_ sender: UIButton) {
         print("nothing")
     }
@@ -137,5 +143,6 @@ class ViewController: UIViewController, WordManagement {
 protocol WordManagement: AnyObject {
     func addNewWord(_ word: String, description: String)
     func removeWord(_ word: String)
+    func showDict()
 }
 
