@@ -24,9 +24,14 @@ class WordItemView: UIView {
     private let wordLabel = UILabel()
     private let descriptionLabel = UILabel()
     
+    private let swipe_to_delete = UISwipeGestureRecognizer()
+    
+    weak var delegate: WordManagement?
+    
     init(word: WordItem) {
         super.init(frame: .zero)
         setupView(word)
+        setupSwipeToDelete()
     }
     
     required init?(coder: NSCoder) {
@@ -48,5 +53,22 @@ class WordItemView: UIView {
         addSubview(descriptionLabel)
         
         self.backgroundColor = .systemBlue
+    }
+    
+    func setupSwipeToDelete() {
+        swipe_to_delete.direction = .left
+        swipe_to_delete.addTarget(self, action: #selector(handleSwipeToDelete))
+        addGestureRecognizer(swipe_to_delete)
+    }
+    
+    @objc private func handleSwipeToDelete() {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
+            self.alpha = 0
+        }) { _ in
+            self.removeFromSuperview()
+        }
+        delegate?.removeWord(self.wordLabel.text!)
+        print("Delete word: \(self.wordLabel.text ?? "")")
     }
 }
