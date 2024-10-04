@@ -74,15 +74,17 @@ class WordItemView: UIView, Changintable {
     }
     
     @objc private func handleSwipeToDelete() {
-        if swipe_to_delete.cancelsTouchesInView {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
-                self.alpha = 0
-            }) { _ in
-                self.removeFromSuperview()
+        guard swipe_to_delete.state == .ended else { return }
+            
+        UIView.animate(withDuration: 0.3, animations: {
+            self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
+            self.alpha = 0
+        }) { _ in
+            self.removeFromSuperview()
+            if let word = self.wordLabel.text {
+                self.delegate?.removeWord(word)
+                print("Deleted word: \(word)")
             }
-            delegate?.removeWord(self.wordLabel.text!)
-            print("Delete word: \(self.wordLabel.text ?? "")")
         }
     }
     
