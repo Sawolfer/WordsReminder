@@ -18,9 +18,14 @@ class WordItem: Codable{
         self.description = description
     }
     
+    public func change(_ word: String, _ description: String) {
+        self.word = word
+        self.description = description
+    }
 }
 
-class WordItemView: UIView {
+class WordItemView: UIView, Changintable {
+    
     private let wordLabel = UILabel()
     private let descriptionLabel = UILabel()
     
@@ -82,7 +87,16 @@ class WordItemView: UIView {
     }
     
     @objc private func handleTapToOpen() {
-        print(wordLabel.text!)
-        delegate?.showDict(wordLabel.text!, description: descriptionLabel.text!)
+        delegate?.showDict(wordLabel.text!, descriptionLabel.text!, self)
     }
+    
+    func change(_ word: String, _ description: String){
+        delegate?.editWord(wordLabel.text!, word, description: description)
+        wordLabel.text = word
+        descriptionLabel.text = description
+    }
+}
+
+protocol Changintable: AnyObject {
+    func change(_ word: String, _ description: String)
 }

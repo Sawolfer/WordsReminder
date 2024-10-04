@@ -12,6 +12,7 @@ class DictionaryViewController: UIViewController {
     @IBOutlet var wordView: UITextView!
     @IBOutlet var descriptionView: UITextView!
     
+    weak var delegate: Changintable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,7 @@ class DictionaryViewController: UIViewController {
 
 
     @IBAction func onDone(_ sender: Any) {
-        print("done")
+        delegate?.change(wordView.text, descriptionView.text)
         self.dismiss(animated: true, completion: nil)
     }
     /*

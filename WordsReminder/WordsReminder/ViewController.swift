@@ -19,6 +19,18 @@ class ViewController: UIViewController, WordManagement {
     var words = [WordItem]()
     var wordsViews = [String: WordItemView]()
     
+    func get_word(_ word: String) -> WordItem?{
+        if words.isEmpty{
+            return nil
+        }
+        for wordItem in words{
+            if wordItem.word == word{
+                return wordItem
+            }
+        }
+        return nil
+    }
+    
     func get_data() async -> [WordItem]{
         do {
             try await storage.load()
@@ -128,8 +140,18 @@ class ViewController: UIViewController, WordManagement {
         }
     }
     
-    public func showDict(_ word: String, description: String) {
+    public func editWord(_ old_version: String, _ word: String, description: String) {
+        let word_to_change = get_word(old_version)
+        word_to_change!.change(word, description)
+        
+        Task {
+            await save_data()
+        }
+    }
+    
+    public func showDict(_ word: String, _ description: String, _ wordView: WordItemView) {
         let dictVC = DictionaryViewController()
+        dictVC.delegate = wordView
         self.present(dictVC, animated: true, completion: nil)
         dictVC.onShow(word: word, description: description)
     }
@@ -139,6 +161,7 @@ class ViewController: UIViewController, WordManagement {
 protocol WordManagement: AnyObject {
     func addNewWord(_ word: String, description: String)
     func removeWord(_ word: String)
-    func showDict(_ word: String, description: String)
+    func editWord(_ old_version: String, _ word: String, description: String)
+    func showDict(_ word: String, _ description: String, _ wordView: WordItemView)
 }
 
