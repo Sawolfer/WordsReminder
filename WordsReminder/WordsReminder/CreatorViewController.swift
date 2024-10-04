@@ -30,7 +30,7 @@ class CreatorViewController: UIViewController {
     
     @IBAction func onDone(_ sender: Any) {
         
-        guard input_word.text?.isEmpty == false || input_word.text?.isEmpty == false else {
+        guard input_word.text?.isEmpty == false && input_word.text?.isEmpty == false else {
             self.dismiss(animated: true, completion: nil)
             return
         }

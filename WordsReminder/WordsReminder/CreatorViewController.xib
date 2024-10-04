@@ -53,7 +53,7 @@
                     </connections>
                 </button>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="afK-E1-d6j">
-                    <rect key="frame" x="34" y="171" width="325" height="660"/>
+                    <rect key="frame" x="34" y="171" width="325" height="304"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" systemColor="quaternarySystemFillColor"/>
                     <color key="textColor" systemColor="labelColor"/>

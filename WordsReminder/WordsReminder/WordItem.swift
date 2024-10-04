@@ -69,17 +69,20 @@ class WordItemView: UIView {
     }
     
     @objc private func handleSwipeToDelete() {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
-            self.alpha = 0
-        }) { _ in
-            self.removeFromSuperview()
+        if swipe_to_delete.cancelsTouchesInView {
+            UIView.animate(withDuration: 0.3, animations: {
+                self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
+                self.alpha = 0
+            }) { _ in
+                self.removeFromSuperview()
+            }
+            delegate?.removeWord(self.wordLabel.text!)
+            print("Delete word: \(self.wordLabel.text ?? "")")
         }
-        delegate?.removeWord(self.wordLabel.text!)
-        print("Delete word: \(self.wordLabel.text ?? "")")
     }
     
     @objc private func handleTapToOpen() {
-        delegate?.showDict()
+        print(wordLabel.text!)
+        delegate?.showDict(wordLabel.text!, description: descriptionLabel.text!)
     }
 }

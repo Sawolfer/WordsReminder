@@ -9,24 +9,28 @@ import UIKit
 
 class DictionaryViewController: UIViewController {
 
-    @IBOutlet var TextInput: UITextView!
+    @IBOutlet var wordView: UITextView!
+    @IBOutlet var descriptionView: UITextView!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        TextInput.isEditable = true
-        TextInput.isScrollEnabled = true
-        TextInput.isUserInteractionEnabled = true
+        descriptionView.isEditable = true
+        descriptionView.isScrollEnabled = true
+        descriptionView.isUserInteractionEnabled = true
         // Do any additional setup after loading the view.
     }
     
-    init(word: String, definition: String){
-        
+    public func onShow(word: String, description: String){
+        wordView.text = "\(word)"
+        descriptionView.text = "\(description)"
     }
 
 
     @IBAction func onDone(_ sender: Any) {
+        print("done")
+        self.dismiss(animated: true, completion: nil)
     }
     /*
     // MARK: - Navigation
