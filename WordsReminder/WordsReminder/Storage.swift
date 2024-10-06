@@ -49,5 +49,91 @@ class Storage: ObservableObject{
         
         try await task.value
     }
+}
+
+class Container{
+    
+    static let shared = Container()
+    var storage: Storage
+    
+    var words = [WordItem]()
+    
+    init(){
+        self.storage = Storage()
+    }
+    
+    func container_load() async {
+        do {
+            try await storage.load()
+            print("Storage loaded successfully")
+        } catch {
+            print("Failed to load storage: \(error.localizedDescription)")
+        }
+    }
+    
+    func add_word(_ word: String, _ description: String){
+        let new_word = WordItem(word,description)
+        words.append(new_word)
+    }
+    
+    func add_word(_ word: WordItem){
+        words.append(word)
+    }
+    
+    func remove_word(_ word: String){
+        words.removeAll(where: { $0.word == word })
+    }
+    
+    func remove_all(){
+        words.removeAll()
+    }
+    
+    func get_length() -> Int{
+        return words.count
+    }
+    
+    func get_word(index: Int) -> WordItem?{
+        if words.isEmpty{
+            return nil
+        }
+        return words[index]
+    }
+    
+    func get_word(_ word: String) -> WordItem?{
+        if words.isEmpty{
+            return nil
+        }
+        for wordItem in words{
+            if wordItem.word == word{
+                return wordItem
+            }
+        }
+        return nil
+    }
+    
+    func get_data() async -> [WordItem]{
+        do {
+            try await storage.load()
+            return storage.words
+        }
+        catch {
+            fatalError(error.localizedDescription)
+        }
+    }
+    
+    func save_data() async {
+        do{
+            try await storage.save(words: words)
+        }
+        catch{
+            fatalError(error.localizedDescription)
+        }
+    }
+    
+    func clear_data(){
+        Task{
+            try await storage.clear()
+        }
+    }
     
 }

@@ -10,55 +10,19 @@ import SwiftUI
 
 class ViewController: UIViewController, WordManagement {
     
-    private var storage = Storage()
-    
     @IBOutlet var list_of_words: UIScrollView!
     
     var currentYPosition: CGFloat = 10.0
-    
-    var words = [WordItem]()
+
     var wordsViews = [String: WordItemView]()
     
-    func get_word(_ word: String) -> WordItem?{
-        if words.isEmpty{
-            return nil
-        }
-        for wordItem in words{
-            if wordItem.word == word{
-                return wordItem
-            }
-        }
-        return nil
-    }
-    
-    func get_data() async -> [WordItem]{
-        do {
-            try await storage.load()
-            return storage.words
-        }
-        catch {
-            fatalError(error.localizedDescription)
-        }
-    }
-    
-    func save_data() async {
-        do{
-            try await storage.save(words: words)
-        }
-        catch{
-            fatalError(error.localizedDescription)
-        }
-    }
-    
     func clear_data(){
-        Task{
-            try await storage.clear()
-            let subViews = self.list_of_words.subviews
-            for subview in subViews{
-                subview.removeFromSuperview()
-            }
-            words.removeAll()
+        Container.shared.clear_data()
+        let subViews = self.list_of_words.subviews
+        for subview in subViews{
+            subview.removeFromSuperview()
         }
+        Container.shared.remove_all ()
     }
     
     override func viewDidLoad() {
@@ -67,21 +31,18 @@ class ViewController: UIViewController, WordManagement {
         list_of_words.showsVerticalScrollIndicator = false
         
         Task {
-            let last_words = await get_data()
+            let last_words = await Container.shared.get_data()
             for word in last_words{
                 addNewWord(word.word, description: word.description)
             }
         }
         
     }
-  
     
     @IBAction func clearAction(_ sender: UIButton) {
         self.clear_data()
     }
     
-    
-
     @IBAction func newWordCreation(_ sender: UIButton) {
         print("new word creation")
         let creator: CreatorViewController = CreatorViewController()
@@ -92,7 +53,7 @@ class ViewController: UIViewController, WordManagement {
     public func addNewWord(_ word: String, description: String) {
         let newWord = WordItem(word, description)
         
-        words.append(newWord)
+        Container.shared.add_word(newWord)
         
         let newWordView = WordItemView(word: newWord)
         newWordView.delegate = self
@@ -111,7 +72,7 @@ class ViewController: UIViewController, WordManagement {
         list_of_words.contentSize = CGSize(width: list_of_words.frame.width, height: currentYPosition)
         
         Task{
-            await save_data()
+            await Container.shared.save_data()
         }
     }
     
@@ -119,12 +80,7 @@ class ViewController: UIViewController, WordManagement {
         let wordView = wordsViews[word]
         
         wordView?.removeFromSuperview()
-        for i in 0..<words.count{
-            if words[i].word == word{
-                words.remove(at: i)
-                break
-            }
-        }
+        Container.shared.remove_word(word)
         let removedViewYPosition = wordView?.frame.origin.y ?? 0
         for subview in list_of_words.subviews {
             if subview.frame.origin.y > removedViewYPosition {
@@ -136,16 +92,16 @@ class ViewController: UIViewController, WordManagement {
         list_of_words.contentSize = CGSize(width: list_of_words.frame.width, height: currentYPosition)
         
         Task {
-            await save_data()
+            await Container.shared.save_data()
         }
     }
     
     public func editWord(_ old_version: String, _ word: String, description: String) {
-        let word_to_change = get_word(old_version)
+        let word_to_change = Container.shared.get_word(old_version)
         word_to_change!.change(word, description)
         
         Task {
-            await save_data()
+            await Container.shared.save_data()
         }
     }
     

@@ -13,9 +13,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        registerForPushNotifications()
-        checkForPermission()
+        loadStorageData {
+            self.registerForPushNotifications()
+            self.checkForPermission()
+        }
         return true
+    }
+    
+    func loadStorageData(completion: @escaping () -> Void) {
+        Task {
+            await Container.shared.container_load()
+            completion()
+        }
     }
     
     func checkForPermission() {
@@ -31,11 +40,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    func chooseRandom() -> WordItem? {
+        
+        let count = Container.shared.get_length()
+        let index = Int.random(in: 0...count-1)
+        let rand_word = Container.shared.get_word(index: index)
+        
+        return rand_word
+    }
+    
     func dispatchNotification() {
         let notificationCenter = UNUserNotificationCenter.current()
         for h in 9...18 {
-            let title = "Word title"
-            let body = "Word description"
+            let word = chooseRandom()
+            let title = word?.word ?? "bebeb"
+            let body = word?.description ?? ".cpp"
             
             var dateComponents = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current)
             dateComponents.hour = h
