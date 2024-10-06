@@ -18,13 +18,19 @@ class WordItem: Codable{
         self.description = description
     }
     
+    public func change(_ word: String, _ description: String) {
+        self.word = word
+        self.description = description
+    }
 }
 
-class WordItemView: UIView {
+class WordItemView: UIView, Changintable {
+    
     private let wordLabel = UILabel()
     private let descriptionLabel = UILabel()
     
     private let swipe_to_delete = UISwipeGestureRecognizer()
+    private let tap_to_open = UITapGestureRecognizer()
     
     weak var delegate: WordManagement?
     
@@ -32,6 +38,7 @@ class WordItemView: UIView {
         super.init(frame: .zero)
         setupView(word)
         setupSwipeToDelete()
+        setupTapToOpen()
     }
     
     required init?(coder: NSCoder) {
@@ -61,14 +68,37 @@ class WordItemView: UIView {
         addGestureRecognizer(swipe_to_delete)
     }
     
+    func setupTapToOpen() {
+        tap_to_open.addTarget(self, action: #selector(handleTapToOpen))
+        addGestureRecognizer(tap_to_open)
+    }
+    
     @objc private func handleSwipeToDelete() {
+        guard swipe_to_delete.state == .ended else { return }
+            
         UIView.animate(withDuration: 0.3, animations: {
             self.frame = self.frame.offsetBy(dx: -self.frame.width, dy: 0)
             self.alpha = 0
         }) { _ in
             self.removeFromSuperview()
+            if let word = self.wordLabel.text {
+                self.delegate?.removeWord(word)
+                print("Deleted word: \(word)")
+            }
         }
-        delegate?.removeWord(self.wordLabel.text!)
-        print("Delete word: \(self.wordLabel.text ?? "")")
     }
+    
+    @objc private func handleTapToOpen() {
+        delegate?.showDict(wordLabel.text!, descriptionLabel.text!, self)
+    }
+    
+    func change(_ word: String, _ description: String){
+        delegate?.editWord(wordLabel.text!, word, description: description)
+        wordLabel.text = word
+        descriptionLabel.text = description
+    }
+}
+
+protocol Changintable: AnyObject {
+    func change(_ word: String, _ description: String)
 }
